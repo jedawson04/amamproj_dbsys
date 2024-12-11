@@ -2,10 +2,32 @@
 <html>
 <head>
 <title>Query Objects</title>
+<script>
+  function loadDoc() {
+      var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+              if (xhttp.readyState == 4 && xhttp.status == 200) {
+                  document.getElementById("popupPeriodMenu").innerHTML = '<option value="">Select period</option>' + xhttp.responseText;
+              }
+          }
+          xhttp.open("GET", "getPeriods.php", true);
+          xhttp.send();
+
+          var xhttpDept = new XMLHttpRequest();
+          xhttpDept.onreadystatechange = function() {
+              if (xhttpDept.readyState == 4 && xhttpDept.status == 200) {
+                  document.getElementById("popupCultureMenu").innerHTML = '<option value="">Select culture</option>' + xhttpDept.responseText;
+              }
+          };
+          xhttpDept.open("GET", "getCultures.php", true);
+          xhttpDept.send();
+  }
+</script>
+
 <style>
   body {
     font-family: Arial, sans-serif;
-    background-color: #f4e1f4; /* Soft pastel purple background */
+    background-color: #f4e1f4;
     margin: 0;
     padding: 0;
     display: flex;
@@ -24,7 +46,7 @@
     max-width: 600px;
   }
   h1 {
-    color: #6a0dad; /* Purple accent color */
+    color: #6a0dad;
   }
   .inputGroup {
     margin: 20px 0;
@@ -33,7 +55,7 @@
     display: block;
     margin-bottom: 10px;
     font-weight: bold;
-    color: #6a0dad; /* Purple accent color */
+    color: #6a0dad;
   }
   .inputGroup input[type="text"] {
     width: 100%;
@@ -49,51 +71,46 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    background-color: #6a0dad; /* Purple accent color */
+    background-color: #6a0dad;
     color: #fff;
     transition: background-color 0.3s;
   }
   .inputGroup button:hover {
-    background-color: #4b0082; /* Darker purple for hover effect */
+    background-color: #4b0082;
   }
 </style>
 </head>
 
-<body>
+<body onload=loadDoc()>
 
 <div class="container">
   <h1>Query Objects</h1>
-  <div class="inputGroup">
-    <label for="objectName">Object Name</label>
-    <input type="text" id="objectName" placeholder="Enter object name">
-  </div>
-  <div class="inputGroup">
-    <label for="materials">Materials</label>
-    <input type="text" id="materials" placeholder="Enter materials">
-  </div>
-  <div class="inputGroup">
-    <label for="period">Period</label>
-    <input type="text" id="period" placeholder="Enter period">
-  </div>
-  <div class="inputGroup">
-    <label for="culture">Culture</label>
-    <input type="text" id="culture" placeholder="Enter culture">
-  </div>
-  <div class="inputGroup">
-    <button onclick="queryObjects()">Search</button>
-  </div>
+  <form action="getObject.php" method="GET">
+    <div class="inputGroup">
+      <label for="objectName">Object Name</label>
+      <input type="text" id="objectName" name="name" placeholder="Enter object name">
+    </div>
+    <div class="inputGroup">
+      <label for="materials">Materials</label>
+      <input type="text" id="materials" name="materials" placeholder="Enter materials">
+    </div>
+    <div class="inputGroup">
+      <label for="period">Period</label>
+      <select name="period" id="popupPeriodMenu">
+          <option value="">Select period</option>
+      </select>
+    </div>
+    <div class="inputGroup">
+      <label for="culture">Culture</label>
+      <select name="culture" id="popupCultureMenu">
+          <option value="">Select culture</option>
+      </select>
+    <div class="inputGroup">
+      <button type="submit">Search</button>
+    </div>
+  </form>
 </div>
 
-<script>
-  function queryObjects() {
-    const objectName = document.getElementById('objectName').value;
-    const materials = document.getElementById('materials').value;
-    const period = document.getElementById('period').value;
-    const culture = document.getElementById('culture').value;
-    // Implement the query logic here
-    alert(`Querying objects with name "${objectName}", materials "${materials}", period "${period}", and culture "${culture}"`);
-  }
-</script>
 
 </body>
 </html>
