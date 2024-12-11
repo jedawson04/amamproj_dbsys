@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AMAM Art Collection</title>
+<script>
+  function loadDoc() {
+  	var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+				document.getElementById("popupTablesMenu").innerHTML = xhttp.responseText;
+			}
+		}
+		xhttp.open("GET", "getTables.php", true);
+		xhttp.send();
+  }
+</script>
+</head>
+
+<body onload=loadDoc()>
+
+<h1>AMAM Art Collection DB</h1>
+<br />
+<form action="showTables.php" method="POST">
+	<div class='inputGroup'>
+		<span class="formLabel">Select A Table to Display</span>
+		<select name="table" id="popupTablesMenu">
+		<option>No tables found<option>
+		</select>
+	</div>
+
+	<div class='inputGroup'>
+		<input type='submit'></input>
+	</div>
+
+</form>
+</div>
+
+</body>
+</html>
