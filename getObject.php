@@ -47,6 +47,7 @@ try {
 
     $stmt->execute();
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $numRows = count($results);
 
     echo "<!DOCTYPE html>
     <html>
@@ -80,7 +81,7 @@ try {
     </style>
     </head>
     <body>
-    <h1>Object Results</h1><h2>Click on any column header to sort the table by that column. First 200 results shown below.</h2>";
+    <h1>Object Results</h1><h2>$numRows result(s) returned (maximum 200 rows returned per query). Click on any column header to sort the table by that column.</h2>";
 
     if ($results) {
         echo "<table id='objectTable'>

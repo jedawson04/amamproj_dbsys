@@ -21,6 +21,24 @@
             };
             xhttpDept.open("GET", "getDepartments.php", true);
             xhttpDept.send();
+            
+            var xhttpAfter = new XMLHttpRequest();
+            xhttpAfter.onreadystatechange = function() {
+                if (xhttpAfter.readyState == 4 && xhttpAfter.status == 200) {
+                    document.getElementById("popupAfterMenu").innerHTML = xhttpAfter.responseText;
+                }
+            };
+            xhttpAfter.open("GET", "getCenturies.php", true);
+            xhttpAfter.send();
+
+            var xhttpBefore = new XMLHttpRequest();
+            xhttpBefore.onreadystatechange = function() {
+                if (xhttpBefore.readyState == 4 && xhttpBefore.status == 200) {
+                    document.getElementById("popupBeforeMenu").innerHTML = '<option value="">Select century</option>' + xhttpBefore.responseText;
+                }
+            };
+            xhttpBefore.open("GET", "getCenturies.php", true);
+            xhttpBefore.send();
     }
   </script>
 
@@ -133,32 +151,25 @@ h1 {
                   <option value="">Select department</option>
               </select>
           </div>
+
           <div class="inputGroup">
-              <label for="dateRange">Century Range</label>
-              <div class="slider-container">
-                  <input type="range" id="startDate" name="startDate" min="-10" max="21" value="-10" oninput="updateSliderValues()">
-                  <input type="range" id="endDate" name="endDate" min="-10" max="21" value="21" oninput="updateSliderValues()">
-              </div>
-              <div class="slider-values">
-                  <span id="startDateValue">-10</span>
-                  <span id="endDateValue">21</span>
-              </div>
+            <label for="popupYearsMenu">Created after century</label>
+            <select name="startDate" id="popupAfterMenu">
+              <option value="">Select century</option>
+            </select>
+          </div>
+
+          <div class="inputGroup">
+            <label for="popupYearsMenu">And before century</label>
+            <select name="endDate" id="popupBeforeMenu">
+              <option value="">Select century</option>
+            </select>
           </div>
           <div class="inputGroup">
               <button type="submit">Search</button>
           </div>
         </form>
       </div>
-
-<script>
-  function updateSliderValues() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    document.getElementById('startDateValue').textContent = startDate;
-    document.getElementById('endDateValue').textContent = endDate;
-  }
-
-</script>
 
 </body>
 </html>

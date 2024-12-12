@@ -9,61 +9,33 @@ try {
     $conn = new PDO("mysql:host=$serverName;dbname=$dbName", $user, $pw);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $title = isset($_GET['title']) ? $_GET['title'] : '';
-    $artistName = isset($_GET['artistName']) ? $_GET['artistName'] : '';
-    $donorName = isset($_GET['donorName']) ? $_GET['donorName'] : '';
-    $classification = isset($_GET['classification']) ? $_GET['classification'] : '';
-    $department = isset($_GET['department']) ? $_GET['department'] : '';
-    $startDate = isset($_GET['startDate']) ? $_GET['startDate'] : '';
-    $endDate = isset($_GET['endDate']) ? $_GET['endDate'] : '';
+    $name = isset($_GET['name']) ? $_GET['name'] : '';
+    $after = $_GET['after'];
+    $before = $_GET['before'];
 
-    $query = "SELECT * FROM art_piece, art_source, artwork_recieved, department WHERE art_piece.accession_id = artwork_recieved.accession_id AND artwork_recieved.donor_id = art_source.donor_id AND art_piece.department_id = department.department_id";
-    if ($title) {
-        $query .= " AND title LIKE :title";
+    $query = "SELECT credit_line, count(credit_line) as num FROM art_source, artwork_recieved WHERE art_source.donor_id = artwork_recieved.donor_id";
+    if ($name) {
+        $query .= " AND credit_line LIKE :name";
     }
-    if ($artistName) {
-        $query .= " AND maker LIKE :artistName";
+    if ($after) {
+        $query .= " AND year_received >= :after";
     }
-    if ($donorName) {
-        $query .= " AND credit_line LIKE :donorName";
-    }
-    if ($classification) {
-        $query .= " AND classification = :classification";
-    }
-    if ($department) {
-        $query .= " AND department_name = :department";
-    }
-    if ($startDate) {
-        $query .= " AND century >= :startDate";
-    }
-    if ($endDate) {
-        $query .= " AND century <= :endDate";
+    if ($before) {
+        $query .= " AND year_received <= :before";
     }
 
-    $query .= " LIMIT 200";
+    $query .= " GROUP BY credit_line LIMIT 200";
 
     $stmt = $conn->prepare($query);
 
-    if ($title) {
-        $stmt->bindValue(':title', "%$title%");
+    if ($name) {
+        $stmt->bindValue(':name', "%$name%");
     }
-    if ($artistName) {
-        $stmt->bindValue(':artistName', "%$artistName%");
+    if ($after) {
+        $stmt->bindValue(':after', $after);
     }
-    if ($donorName) {
-        $stmt->bindValue(':donorName', "%$donorName%");
-    }
-    if ($classification) {
-        $stmt->bindValue(':classification', $classification);
-    }
-    if ($department) {
-        $stmt->bindValue(':department', $department);
-    }
-    if ($startDate) {
-        $stmt->bindValue(':startDate', (int)$startDate);
-    }
-    if ($endDate) {
-        $stmt->bindValue(':endDate', (int)$endDate);
+    if ($before) {
+        $stmt->bindValue(':before', $before);
     }
 
     $stmt->execute();
@@ -73,7 +45,7 @@ try {
     echo "<!DOCTYPE html>
     <html>
     <head>
-    <title>Art Pieces Results</title>
+    <title>Donor Results</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -102,31 +74,21 @@ try {
     </style>
     </head>
     <body>
-    <h1>Art Pieces Results</h1><h2>$numRows result(s) returned (maximum 200 rows returned per query). Click on any column header to sort the table by that column.</h2>";
+    <h1>Donor Results</h1><h2>$numRows result(s) returned (maximum 200 rows returned per query). Click on any column header to sort the table by that column.</h2>";
 
     if ($results) {
-        echo "<table id='artPiecesTable'>
+        echo "<table id='donorTable'>
         <thead>
         <tr>
-            <th onclick='sortTable(0)'>Title</th>
-            <th onclick='sortTable(1)'>Artist Name</th>
-            <th onclick='sortTable(2)'>Donor Name</th>
-            <th onclick='sortTable(3)'>Classification</th>
-            <th onclick='sortTable(4)'>Department</th>
-            <th onclick='sortTable(5)'>Century</th>
-            <th>Description</th>
+            <th onclick='sortTable(0)'>Donor</th>
+            <th onclick='sortTable(1)'>Number of Donations</th>
         </tr>
         </thead>
         <tbody>";
         foreach ($results as $row) {
             echo "<tr>
-                <td>{$row['title']}</td>
-                <td>{$row['maker']}</td>
                 <td>{$row['credit_line']}</td>
-                <td>{$row['classification']}</td>
-                <td>{$row['department_name']}</td>
-                <td>{$row['century']}</td>
-                <td>{$row['label_text']}</td>
+                <td>{$row['num']}</td>
             </tr>";
         }
         echo "</tbody></table>";
@@ -137,7 +99,7 @@ try {
     echo "<script>
     function sortTable(n) {
         var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-        table = document.getElementById('artPiecesTable');
+        table = document.getElementById('donorTable');
         switching = true;
         dir = 'asc'; 
         while (switching) {

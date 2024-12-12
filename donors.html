@@ -2,10 +2,32 @@
 <html>
 <head>
 <title>Query Donors</title>
+<script>
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+              document.getElementById("popupAfterMenu").innerHTML = xhttp.responseText;
+          }
+      }
+      xhttp.open("GET", "getYears.php", true);
+      xhttp.send();
+
+      var xhttpDept = new XMLHttpRequest();
+            xhttpDept.onreadystatechange = function() {
+                if (xhttpDept.readyState == 4 && xhttpDept.status == 200) {
+                    document.getElementById("popupBeforeMenu").innerHTML = '<option value="">Select year</option>' + xhttpDept.responseText;
+                }
+            };
+            xhttpDept.open("GET", "getYears.php", true);
+            xhttpDept.send();
+}
+</script>
+
 <style>
   body {
     font-family: Arial, sans-serif;
-    background-color: #f4e1f4; /* Soft pastel purple background */
+    background-color: #f4e1f4;
     margin: 0;
     padding: 0;
     display: flex;
@@ -24,7 +46,7 @@
     max-width: 600px;
   }
   h1 {
-    color: #6a0dad; /* Purple accent color */
+    color: #6a0dad;
   }
   .inputGroup {
     margin: 20px 0;
@@ -33,7 +55,7 @@
     display: block;
     margin-bottom: 10px;
     font-weight: bold;
-    color: #6a0dad; /* Purple accent color */
+    color: #6a0dad;
   }
   .inputGroup input[type="text"] {
     width: 100%;
@@ -52,12 +74,12 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    background-color: #6a0dad; /* Purple accent color */
+    background-color: #6a0dad;
     color: #fff;
     transition: background-color 0.3s;
   }
   .inputGroup button:hover {
-    background-color: #4b0082; /* Darker purple for hover effect */
+    background-color: #4b0082;
   }
   .slider-container {
     display: flex;
@@ -72,46 +94,35 @@
 </style>
 </head>
 
-<body>
+<body onload=loadDoc()>
 
 <div class="container">
   <h1>Query Donors</h1>
-  <div class="inputGroup">
-    <label for="donorName">Donor Name</label>
-    <input type="text" id="donorName" placeholder="Enter donor name">
-  </div>
-  <div class="inputGroup">
-    <label for="donationPeriod">Donation Period</label>
-    <div class="slider-container">
-      <input type="range" id="startYear" min="1900" max="2023" value="1900" oninput="updateSliderValues()">
-      <input type="range" id="endYear" min="1900" max="2023" value="2023" oninput="updateSliderValues()">
+  <form action="getDonor.php" method="GET">
+    <div class="inputGroup">
+      <label for="donorName">Donor Name</label>
+      <input name="name" type="text" id="donorName" placeholder="Enter donor name">
     </div>
-    <div class="slider-values">
-      <span id="startYearValue">1900</span>
-      <span id="endYearValue">2023</span>
+
+    <div class="inputGroup">
+      <label for="popupYearsMenu">Who donated after</label>
+      <select name="after" id="popupAfterMenu">
+        <option value="">Select donation year</option>
+      </select>
     </div>
-  </div>
-  <div class="inputGroup">
-    <button onclick="queryDonors()">Search</button>
-  </div>
+
+    <div class="inputGroup">
+      <label for="popupYearsMenu">And before</label>
+      <select name="before" id="popupBeforeMenu">
+        <option value="">Select donation year</option>
+      </select>
+    </div>
+    
+    <div class="inputGroup">
+      <button type="submit">Search</button>
+    </div>
+  </form>
 </div>
-
-<script>
-  function updateSliderValues() {
-    const startYear = document.getElementById('startYear').value;
-    const endYear = document.getElementById('endYear').value;
-    document.getElementById('startYearValue').textContent = startYear;
-    document.getElementById('endYearValue').textContent = endYear;
-  }
-
-  function queryDonors() {
-    const donorName = document.getElementById('donorName').value;
-    const startYear = document.getElementById('startYear').value;
-    const endYear = document.getElementById('endYear').value;
-    // Implement the query logic here
-    alert(`Querying donors with name "${donorName}" who donated between ${startYear} and ${endYear}`);
-  }
-</script>
 
 </body>
 </html>
